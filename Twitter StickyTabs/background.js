@@ -1,42 +1,54 @@
 /**
  * @author James Macdonald
  */
-<html>
-<head>
-</head>
-<body onload="onLoad()">
-<script>
-                
+    
 var tabsToStickOn,locked,domUpdateBlock;   
                 
-function onLoad(){
+chrome.app.runtime.onLaunched.addListener(function() { 
 	chrome.browserAction.onClicked.addListener(function(a){toggleStickTabs(a)});
-} 
+});
                   
 tabsToStickOn=[];                   
 domUpdateBlock=locked=0;  
                  
 chrome.extension.onConnect.addListener(
 	function(a){
-		"linkClick"==a.name?a.onMessage.addListener(stickyTabsOnclickHandler);                   
-		"DOMmodified"==a.name?a.onMessage.addListener(DOMmodifiedEventHandler);                   
-		console.log("unknown event, from content scripts.");
+		if("linkClick"==a.name)
+		{
+			a.onMessage.addListener(stickyTabsOnclickHandler);                   
+			return;
 		}
+		else if("DOMmodified"==a.name)
+		{
+			a.onMessage.addListener(DOMmodifiedEventHandler);  
+			return;                 
+		}
+		console.log("unknown event, from content scripts.");
+	}
 	);        
 		           
 chrome.tabs.onUpdated.addListener(
-	function(a,b,c){
-		-1!=inStickTabs(c)&&(deactivateStickyTabs(c),activateStickyTabs(c))
+	function(tab){
+		if(inStickTabs(tab))
+		{
+			activateStickyTabs(tab);
+			return;
 		}
+		else
+		{
+			return;
+		}
+		
+	}
 	);   
 		                
 chrome.tabs.onActiveChanged.addListener(
 	function(a){
-		if(-1!=inStickTabs(a))
+		if(inStickTabs(a))
 		tabsToStickOn[inStickTabs(a)].domUpdateBlock=!1,
 		chrome.tabs.executeScript(a,{file:"eventEditor.js"});  
                  
-		else if(-1==inStickTabs(a))
+		else if(inStickTabs(a))
 		for(a=0;a<tabsToStickOn.length;a++)tabsToStickOn[a].domUpdateBlock=!0
 		}
 	);
@@ -60,7 +72,7 @@ function toggleStickTabs(a){
 	else
 	{
 		checkAndShowHideDonatePopup(a);
-		activateStickyTabs(a),trackActiveOrNot(!0))
+		activateStickyTabs(a);
 	}
 }
 	
@@ -165,6 +177,3 @@ function DOMmodifiedEventHandler(){
 	for(var a=0;a<tabsToStickOn.length;a++)
 	!0!=tabsToStickOn[a].domUpdateBlock&&changeEvents(tabsToStickOn[a])
 }                   
-</script>
-</body>
-</html>
