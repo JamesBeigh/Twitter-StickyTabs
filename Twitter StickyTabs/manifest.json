@@ -2,6 +2,11 @@
   "name": "Twitter StickyTabs",
   "version": "2.0",
   "manifest_version": 2,
+  
+  "browser_action": {
+      "default_icon": "images/icon.png",
+      "default_title": "Click to activate StickyTabs"
+   },
 
   "description": "Keeps the current tab selected when opening links from your Twitter Feed.",
   

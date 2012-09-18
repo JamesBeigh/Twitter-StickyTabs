@@ -4,7 +4,7 @@
     
 var tabsToStickOn,locked,domUpdateBlock;   
                 
-chrome.app.runtime.onLaunched.addListener(function() { 
+chrome.app.runtime.onLaunched.addListener(function(launchData){ 
 	chrome.browserAction.onClicked.addListener(function(a){toggleStickTabs(a)});
 });
                   
