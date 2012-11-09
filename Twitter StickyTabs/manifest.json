@@ -14,19 +14,27 @@
              "48": "images/48.png",
             "128": "images/128.png" },
   
-  "background": {
-  "scripts": [
-  	"background.js"
-  ]
-  },
+	  "background": {
+	  	"persistent": false,
+		  "scripts": [
+		    "background.js"
+		  ]
+	},
+	  
+  "content_scripts": [
+    {
+      "matches": ["http://*.twitter.com/*", "https://*.twitter.com/*"],
+      "js": ["eventEditor.js", "pageRestore.js", "pagePreparerAndEventHandler.js"]
+    }
+  ],
  
   
  
   "permissions": [
   "http://*.twitter.com/*",
   "https://*.twitter.com/*",
-  "tabs"
-  
+  "tabs",
+  "background"  
   ]
 
 }

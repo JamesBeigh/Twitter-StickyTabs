@@ -3,13 +3,13 @@
  */
     
 var tabsToStickOn,locked,domUpdateBlock;   
-                
-chrome.app.runtime.onLaunched.addListener(function(launchData){ 
-	chrome.browserAction.onClicked.addListener(function(a){toggleStickTabs(a)});
-});
-                  
+
 tabsToStickOn=[];                   
 domUpdateBlock=locked=0;  
+             
+chrome.runtime.onStartup.addListener(function(launchData){ 
+	chrome.browserAction.onClicked.addListener(function(a){toggleStickTabs(a)});
+});
                  
 chrome.extension.onConnect.addListener(
 	function(a){
@@ -18,11 +18,11 @@ chrome.extension.onConnect.addListener(
 			a.onMessage.addListener(stickyTabsOnclickHandler);                   
 			return;
 		}
-		else if("DOMmodified"==a.name)
+		/*else if("DOMmodified"==a.name)
 		{
 			a.onMessage.addListener(DOMmodifiedEventHandler);  
 			return;                 
-		}
+		}*/
 		console.log("unknown event, from content scripts.");
 	}
 	);        
@@ -41,7 +41,8 @@ chrome.tabs.onUpdated.addListener(
 		
 	}
 	);   
-		                
+		
+		/*                
 chrome.tabs.onActiveChanged.addListener(
 	function(a){
 		if(inStickTabs(a))
@@ -52,26 +53,26 @@ chrome.tabs.onActiveChanged.addListener(
 		for(a=0;a<tabsToStickOn.length;a++)tabsToStickOn[a].domUpdateBlock=!0
 		}
 	);
-	
+	*/
 function toggleStickTabs(a){
-	
+	console.log("clicking da button");
 	if(locked)
 	{
 		wait(500)
 	}
-	else if(tabsToStickOn.length==0)
+	else if(tabsToStickOn.length==0||tabsToStickOn==null)
 	{
-		checkAndShowHideDonatePopup(a);
+		//checkAndShowHideDonatePopup(a);
 		activateStickyTabs(a);
 	}
 	else if(inStickTabs(a))
 	{
-		checkAndShowHideDonatePopup(a);
+		//checkAndShowHideDonatePopup(a);
 		deactivateStickyTabs(a);
 	}
 	else
 	{
-		checkAndShowHideDonatePopup(a);
+		//checkAndShowHideDonatePopup(a);
 		activateStickyTabs(a);
 	}
 }
@@ -154,7 +155,7 @@ function deactivateStickyTabs(a){
 	removeStickTab(a.id);                   
 	locked=!1
 }
-function checkAndShowHideDonatePopup(a){
+/*function checkAndShowHideDonatePopup(a){
 	var b=new Date;                   
 	if(15==b.getDate()&&localStorage.lastMonthShownDonate!=b.getMonth()){var c={};                   
 	c.index=a.index+1;                   
@@ -165,6 +166,7 @@ function checkAndShowHideDonatePopup(a){
 	chrome.tabs.create(c)
 	}
 }
+*/
 function stickyTabsOnclickHandler(a){
 	var b={};                   
 	""!=a.url&&chrome.windows.getCurrent(function(c){chrome.tabs.getSelected(c.id,function(c){b.index=c.index+1;                   
@@ -173,7 +175,7 @@ function stickyTabsOnclickHandler(a){
 		chrome.tabs.create(b)})})
 }
 		
-function DOMmodifiedEventHandler(){
+/*function DOMmodifiedEventHandler(){
 	for(var a=0;a<tabsToStickOn.length;a++)
 	!0!=tabsToStickOn[a].domUpdateBlock&&changeEvents(tabsToStickOn[a])
-}                   
+} */                  
